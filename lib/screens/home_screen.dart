@@ -45,24 +45,51 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Peliculas')),
+      appBar: AppBar(
+        title: const Text('Películas'),
+        backgroundColor: Colors.blueAccent,
+      ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : ListView.builder(
               itemCount: _peliculas.length,
               itemBuilder: (context, index) {
                 final pelicula = _peliculas[index];
-                return ListTile(
-                  title: Text(pelicula['titulo']),
-                  subtitle: Text(pelicula['descripcion']),
-                  leading: pelicula['image'] != null
-                      ? Image.network(
-                          pelicula['image'], // Usando la URL de la imagen desde el JSON
-                          width: 50,
-                          height: 75,
-                          fit: BoxFit.cover,
-                        )
-                      : const Icon(Icons.image_not_supported),
+                return Card(
+                  margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                  elevation: 5, // Sombra para la tarjeta
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12), // Bordes redondeados
+                  ),
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.all(10),
+                    title: Text(
+                      pelicula['titulo'],
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blueAccent,
+                      ),
+                    ),
+                    subtitle: Text(
+                      pelicula['descripcion'],
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    leading: pelicula['image'] != null
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.network(
+                              pelicula['image'], // Usando la URL de la imagen desde el JSON
+                              width: 60,
+                              height: 90,
+                              fit: BoxFit.cover,
+                            ),
+                          )
+                        : const Icon(Icons.image_not_supported, size: 60),
+                  ),
                 );
               },
             ),

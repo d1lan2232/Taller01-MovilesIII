@@ -23,7 +23,6 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     // Lógica de autenticación aquí
-    // Aquí podrías agregar más validaciones o autenticación real
 
     // Si todo es válido, navegamos a la pantalla principal
     Navigator.push(
@@ -42,48 +41,108 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 0, 0, 0), // Fondo suave y claro
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const SizedBox(height: 20),
-            const Text(
-              'Iniciar sesión',
-              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+        padding: const EdgeInsets.symmetric(horizontal: 20.0), // Ajustar los márgenes
+        child: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Text(
+                  'Iniciar sesión',
+                  style: TextStyle(
+                    fontSize: 36, // Tamaño de fuente mayor
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blueAccent, // Color atractivo
+                  ),
+                ),
+                const SizedBox(height: 40),
+                // Campo de correo
+                TextField(
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(
+                    labelText: 'Correo electrónico',
+                    hintText: 'Ingresa tu correo',
+                    prefixIcon: const Icon(Icons.email),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: const Color.fromARGB(255, 0, 0, 0)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: Color.fromARGB(255, 13, 13, 13)),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                // Campo de contraseña
+                TextField(
+                  controller: _passwordController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    labelText: 'Contraseña',
+                    hintText: 'Ingresa tu contraseña',
+                    prefixIcon: const Icon(Icons.lock),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: const Color.fromARGB(255, 0, 0, 0)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: Color.fromARGB(255, 0, 0, 0)),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 30),
+                // Botón de Login
+                ElevatedButton(
+                  onPressed: _login,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 17, 30, 40), // Color de fondo
+                    padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 40),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    'Iniciar sesión',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                // Texto de no cuenta
+                const Padding(
+                  padding: EdgeInsets.only(top: 20.0),
+                  child: Text(
+                    "¿No tienes cuenta?",
+                    style: TextStyle(fontSize: 16, color: Color.fromARGB(255, 255, 255, 255)),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                // Enlace a Crear cuenta
+                TextButton(
+                  onPressed: _goToCrearCuenta,
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.all(0),
+                  ),
+                  child: const Text(
+                    'Crea una cuenta',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.blueAccent,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 40),
-            TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(labelText: 'Correo'),
-            ),
-            const SizedBox(height: 20),
-            TextField(
-              controller: _passwordController,
-              decoration: const InputDecoration(labelText: 'Contraseña'),
-              obscureText: true,
-            ),
-            const SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: _login,
-              child: const Text('Login'),
-            ),
-            const Padding(
-              padding: EdgeInsets.only(top: 20.0),
-              child: Text(
-                "No tienes cuenta?",
-                style: TextStyle(fontSize: 16),
-              ),
-            ),
-            const SizedBox(height: 20),
-            TextButton(
-              onPressed: _goToCrearCuenta,
-              child: const Text(
-                'Crea una cuenta',
-                style: TextStyle(fontSize: 16),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );

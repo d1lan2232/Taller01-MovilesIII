@@ -1,4 +1,4 @@
-import 'dart:convert';  // Importa el paquete para trabajar con JSON
+import 'dart:convert'; 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -46,9 +46,17 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Películas'),
-        backgroundColor: const Color.fromARGB(255, 255, 0, 0),
-      ),
+  title: const Text('Películas'),
+  backgroundColor: const Color.fromARGB(255, 255, 0, 0),
+  actions: [
+    IconButton(
+      icon: const Icon(Icons.account_circle),
+      onPressed: () {
+       
+      },
+    ),
+  ],
+),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : ListView.builder(
@@ -57,9 +65,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 final pelicula = _peliculas[index];
                 return Card(
                   margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                  elevation: 5, // Sombra para la tarjeta
+                  elevation: 5, 
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12), // Bordes redondeados
+                    borderRadius: BorderRadius.circular(12), 
                   ),
                   child: ListTile(
                     contentPadding: const EdgeInsets.all(10),
@@ -82,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ? ClipRRect(
                             borderRadius: BorderRadius.circular(8),
                             child: Image.network(
-                              pelicula['image'], // Usando la URL de la imagen desde el JSON
+                              pelicula['image'], 
                               width: 60,
                               height: 90,
                               fit: BoxFit.cover,

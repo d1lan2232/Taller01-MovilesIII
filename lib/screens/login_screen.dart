@@ -1,6 +1,8 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'home_screen.dart';
-import 'crear_cuenta_screen.dart';
+import 'home_screen.dart';  
+import 'crear_cuenta_screen.dart'; 
+
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -13,22 +15,38 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  void _login() {
+ 
+  void _login() async {
     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
-      // Mostrar un mensaje si los campos están vacíos
+      
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Por favor, ingresa tu correo y contraseña.')),
       );
       return;
     }
+    DatabaseReference ref = FirebaseDatabase.instance.ref("users/" + _emailController.text);
 
-    // Lógica de autenticación aquí
+    DataSnapshot snapshot = await ref.get();
 
-    // Si todo es válido, navegamos a la pantalla principal
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const HomeScreen()),
-    );
+    if (snapshot.exists) {
+      String storedPassword = snapshot.child('contrasenia').value.toString();
+
+      if (storedPassword == _passwordController.text) {
+        
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Contraseña incorrecta')),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('El correo no está registrado. ¿Quieres crear una cuenta?')),
+      );
+    }
   }
 
   void _goToCrearCuenta() {
@@ -41,24 +59,31 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Iniciar sesión'),
+        backgroundColor: const Color.fromARGB(255, 255, 0, 0),
+        actions: [
+          
+        ],
+      ),
       body: Stack(
         children: [
-          // Imagen de fondo
+          
           Positioned.fill(
             child: Image.network(
               'https://www.teknofilo.com/wp-content/uploads/2021/06/Netflix-1280x720.jpg', // URL de la imagen
-              fit: BoxFit.cover, // Ajuste de la imagen para cubrir toda la pantalla
+              fit: BoxFit.cover,
             ),
           ),
-          // Fondo oscuro con opacidad para que el contenido sea legible
+        
           Positioned.fill(
             child: Container(
-              color: Colors.black.withOpacity(0.5), // Filtro oscuro
+              color: Colors.black.withOpacity(0.5), 
             ),
           ),
-          // Contenido principal
+        
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0), // Ajuste de los márgenes
+            padding: const EdgeInsets.symmetric(horizontal: 20.0), 
             child: Center(
               child: SingleChildScrollView(
                 child: Column(
@@ -69,13 +94,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     const Text(
                       'Iniciar sesión',
                       style: TextStyle(
-                        fontSize: 36, // Tamaño de fuente mayor
+                        fontSize: 36, 
                         fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(255, 253, 254, 255), // Color atractivo
+                        color: Color.fromARGB(255, 253, 254, 255), 
                       ),
                     ),
                     const SizedBox(height: 40),
-                    // Campo de correo
+                  
                     TextField(
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
@@ -94,7 +119,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    // Campo de contraseña
+                   
                     TextField(
                       controller: _passwordController,
                       obscureText: true,
@@ -113,26 +138,16 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     const SizedBox(height: 30),
-                    // Botón de Login
+                  
                     ElevatedButton(
-                      onPressed: _login,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromARGB(255, 247, 3, 3), // Color de fondo
-                        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 40),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
+                      onPressed: _login, 
                       child: const Text(
                         'Iniciar sesión',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: TextStyle(fontSize: 18),
                       ),
                     ),
                     const SizedBox(height: 20),
-                    // Texto de no cuenta
+                
                     const Padding(
                       padding: EdgeInsets.only(top: 20.0),
                       child: Text(
@@ -141,7 +156,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    // Enlace a Crear cuenta
+                  
                     TextButton(
                       onPressed: _goToCrearCuenta,
                       style: TextButton.styleFrom(

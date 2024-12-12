@@ -1,3 +1,4 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 class CrearCuentaScreen extends StatefulWidget {
@@ -12,31 +13,56 @@ class _CrearCuentaScreenState extends State<CrearCuentaScreen> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
-  void _register() {
-    if (_passwordController.text != _confirmPasswordController.text) {
+   void _register() {
+     if (_passwordController.text != _confirmPasswordController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Las contraseñas no coinciden')),
       );
       return;
     }
 
-    // Lógica para registrar usuario aquí
-    // Validación de contraseñas, etc.
+   guardar(_emailController.text, _passwordController.text);
 
+    
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Cuenta creada exitosamente')),
     );
-    Navigator.pop(context); // Vuelve al LoginScreen
+
+    
+    Navigator.pop(context); 
+  }
+
+  
+  Future<void> guardar(String correo, String contrasenia) async {
+    try {
+      DatabaseReference ref = FirebaseDatabase.instance.ref("users/" + correo);
+
+      
+      await ref.set({
+        "correo": correo,
+        "contrasenia": contrasenia,
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Datos guardados exitosamente")),
+      );
+    } catch (e) {
+    
+      print("Error al guardar los datos: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Error al guardar los datos")),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black, // Fondo oscuro como Netflix
+      backgroundColor: Colors.black,
       appBar: AppBar(
         title: const Text('Crear Cuenta'),
-        backgroundColor: Colors.transparent, // Hacer el AppBar transparente
-        elevation: 0, // Eliminar sombra del AppBar
+        backgroundColor: Colors.transparent, 
+        elevation: 0, 
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -45,31 +71,31 @@ class _CrearCuentaScreenState extends State<CrearCuentaScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+
                 const SizedBox(height: 30),
-                // Título de la pantalla
+               
                 const Text(
                   'Crea una cuenta nueva',
                   style: TextStyle(
-                    fontSize: 32, // Tamaño de fuente mayor
+                    fontSize: 32, 
                     fontWeight: FontWeight.bold,
-                    color: Colors.white, // Texto blanco
+                    color: Colors.white, 
                   ),
                 ),
                 const SizedBox(height: 40),
-                
-                // Campo de correo
+      
                 TextField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  style: const TextStyle(color: Colors.white), // Texto blanco en el campo
+                  style: const TextStyle(color: Colors.white), 
                   decoration: InputDecoration(
                     labelText: 'Correo electrónico',
                     hintText: 'Ingresa tu correo',
-                    hintStyle: const TextStyle(color: Colors.white54), // Hint en blanco
-                    labelStyle: const TextStyle(color: Colors.white), // Label blanco
-                    prefixIcon: const Icon(Icons.email, color: Colors.white), // Icono blanco
+                    hintStyle: const TextStyle(color: Colors.white54), 
+                    labelStyle: const TextStyle(color: Colors.white), 
+                    prefixIcon: const Icon(Icons.email, color: Colors.white), 
                     filled: true,
-                    fillColor: Colors.black.withOpacity(0.8), // Fondo oscuro del campo
+                    fillColor: Colors.black.withOpacity(0.8), 
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: const BorderSide(color: Colors.white),
@@ -82,7 +108,6 @@ class _CrearCuentaScreenState extends State<CrearCuentaScreen> {
                 ),
                 const SizedBox(height: 20),
 
-                // Campo de contraseña
                 TextField(
                   controller: _passwordController,
                   obscureText: true,
@@ -107,7 +132,7 @@ class _CrearCuentaScreenState extends State<CrearCuentaScreen> {
                 ),
                 const SizedBox(height: 20),
 
-                // Campo de confirmación de contraseña
+                
                 TextField(
                   controller: _confirmPasswordController,
                   obscureText: true,
@@ -132,11 +157,11 @@ class _CrearCuentaScreenState extends State<CrearCuentaScreen> {
                 ),
                 const SizedBox(height: 30),
 
-                // Botón de crear cuenta
+              
                 ElevatedButton(
                   onPressed: _register,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 229, 9, 20), // Rojo Netflix
+                    backgroundColor: const Color.fromARGB(255, 229, 9, 20), 
                     padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 40),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -151,11 +176,9 @@ class _CrearCuentaScreenState extends State<CrearCuentaScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-
-                // Texto de enlace a login
                 TextButton(
                   onPressed: () {
-                    Navigator.pop(context); // Volver a la pantalla de login
+                    Navigator.pop(context); 
                   },
                   child: const Text(
                     '¿Ya tienes cuenta? Inicia sesión',

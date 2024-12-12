@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "913873090818",
+    "firebase_url": "https://tallermoviles-624c5-default-rtdb.firebaseio.com",
+    "project_id": "tallermoviles-624c5",
+    "storage_bucket": "tallermoviles-624c5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:913873090818:android:d31f00f61ed641f13b2a1b",
+        "android_client_info": {
+          "package_name": "com.example.taller1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAw5ldWDwaIg69FvtlOldI6KG5ei6WQ17s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

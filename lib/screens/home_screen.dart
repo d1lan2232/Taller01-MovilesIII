@@ -1,6 +1,7 @@
 import 'dart:convert'; 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:taller1/screens/profileScreen.dart';
 import 'package:taller1/screens/videoScreen.dart';
 
 
@@ -75,7 +76,21 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('Películas'),
         backgroundColor: const Color.fromARGB(255, 255, 0, 0),
-      ),
+     actions: [
+  IconButton(
+    onPressed: () {
+      // Asegúrate de que estás pasando el correo del usuario (por ejemplo, de tu autenticación)
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ProfileScreen(email: 'usuario@correo.com'), // Pasa el correo dinámicamente aquí
+        ),
+      );
+    },
+    icon: Icon(Icons.person),
+  ),
+], ),
+    
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : ListView.builder(

@@ -1,8 +1,10 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:taller1/screens/home_screen.dart';
+import 'package:taller1/screens/profileScreen.dart';
 
 class ProfileScreen extends StatefulWidget {
-  final String email; // Recibe el correo del usuario que está logueado
+  final String email; 
   const ProfileScreen({super.key, required this.email});
 
   @override
@@ -16,7 +18,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final _ageController = TextEditingController();
   final _genderController = TextEditingController();
   final _locationController = TextEditingController();
-  bool _isDarkMode = false;
+  bool _isDarkMode = true; // Modo oscuro activado por defecto
+  int _indice = 2; // Índice de la barra de navegación
 
   @override
   void initState() {
@@ -24,12 +27,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _loadUserData();
   }
 
-  // Función para formatear el correo (remover puntos para Firebase)
   String formatEmail(String email) {
     return email.replaceAll('.', '_');
   }
 
-  // Cargar los datos del usuario desde Firebase al cargar la pantalla
   void _loadUserData() async {
     String formattedEmail = formatEmail(widget.email);
     DatabaseReference ref = FirebaseDatabase.instance.ref("users/$formattedEmail");
@@ -38,12 +39,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     if (snapshot.exists) {
       setState(() {
-        _emailController.text = snapshot.child('correo').value.toString(); // Correo
-        _passwordController.text = snapshot.child('contrasenia').value.toString(); // Contraseña
-        _nameController.text = snapshot.child('nombre').value.toString(); // Nombre
-        _ageController.text = snapshot.child('edad').value.toString(); // Edad
-        _genderController.text = snapshot.child('genero').value.toString(); // Género
-        _locationController.text = snapshot.child('ubicacion').value.toString(); // Ubicación
+        _emailController.text = snapshot.child('correo').value.toString(); 
+        _passwordController.text = snapshot.child('contrasenia').value.toString(); 
+        _nameController.text = snapshot.child('nombre').value.toString(); 
+        _ageController.text = snapshot.child('edad').value.toString(); 
+        _genderController.text = snapshot.child('genero').value.toString(); 
+        _locationController.text = snapshot.child('ubicacion').value.toString(); 
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -52,14 +53,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  // Guardar los datos modificados en Firebase
   void _saveUserData() async {
     String formattedEmail = formatEmail(widget.email);
     DatabaseReference ref = FirebaseDatabase.instance.ref("users/$formattedEmail");
 
     Map<String, dynamic> updatedData = {};
 
-    // Solo actualizamos los campos que han sido modificados
     if (_nameController.text.isNotEmpty) {
       updatedData["nombre"] = _nameController.text;
     }
@@ -85,7 +84,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  // Eliminar cuenta
   void _deleteAccount() async {
     String formattedEmail = formatEmail(widget.email);
     DatabaseReference ref = FirebaseDatabase.instance.ref("users/$formattedEmail");
@@ -96,14 +94,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
       const SnackBar(content: Text("Cuenta eliminada exitosamente")),
     );
 
-    Navigator.pop(context); // Regresar a la pantalla anterior
+    Navigator.pop(context); 
   }
 
-  // Alternar entre modo oscuro y claro
   void _toggleTheme() {
     setState(() {
       _isDarkMode = !_isDarkMode;
     });
+  }
+
+  void _onNavItemTapped(int index) {
+    setState(() {
+      _indice = index;
+    });
+
+    if (index == 0) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+    } else if (index == 2) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ProfileScreen(email: widget.email),
+        ),
+      );
+    }
   }
 
   @override
@@ -139,10 +156,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
                 const SizedBox(height: 40),
-                // Campo de correo (solo lectura)
                 TextField(
                   controller: _emailController,
-                  enabled: false, // No editable
+                  enabled: false,
                   decoration: InputDecoration(
                     labelText: 'Correo electrónico',
                     labelStyle: TextStyle(color: _isDarkMode ? Colors.white : Colors.black),
@@ -153,11 +169,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                // Campo de contraseña (solo lectura)
                 TextField(
                   controller: _passwordController,
                   obscureText: true,
-                  enabled: false, // No editable
+                  enabled: false,
                   decoration: InputDecoration(
                     labelText: 'Contraseña',
                     labelStyle: TextStyle(color: _isDarkMode ? Colors.white : Colors.black),
@@ -168,7 +183,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                // Campo de nombre editable
                 TextField(
                   controller: _nameController,
                   style: TextStyle(color: _isDarkMode ? Colors.white : Colors.black),
@@ -182,7 +196,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                // Campo de edad editable
                 TextField(
                   controller: _ageController,
                   keyboardType: TextInputType.number,
@@ -197,7 +210,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                // Campo de género editable
                 TextField(
                   controller: _genderController,
                   style: TextStyle(color: _isDarkMode ? Colors.white : Colors.black),
@@ -211,7 +223,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                // Campo de ubicación editable
                 TextField(
                   controller: _locationController,
                   style: TextStyle(color: _isDarkMode ? Colors.white : Colors.black),
@@ -225,7 +236,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
                 const SizedBox(height: 30),
-                // Botón para guardar los cambios
                 ElevatedButton(
                   onPressed: _saveUserData,
                   style: ElevatedButton.styleFrom(
@@ -245,7 +255,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                // Botón para eliminar la cuenta
                 ElevatedButton(
                   onPressed: _deleteAccount,
                   style: ElevatedButton.styleFrom(
@@ -268,6 +277,44 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _indice,
+        onTap: (value) {
+          setState(() {
+            _indice = value;
+          });
+
+          if (value == 0) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const HomeScreen()),
+            );
+          } else if (value == 2) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ProfileScreen(email: widget.email),
+              ),
+            );
+          }
+        },
+        selectedItemColor: _isDarkMode ? Colors.redAccent : Colors.red,
+        unselectedItemColor: _isDarkMode ? Colors.grey : Colors.black,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.movie_filter_rounded),
+            label: "Películas",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.camera_alt),
+            label: "Escanear",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.accessible_sharp),
+            label: "Perfil",
+          ),
+        ],
       ),
     );
   }

@@ -1,9 +1,9 @@
-import 'dart:convert'; 
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:taller1/screens/profileScreen.dart';
 import 'package:taller1/screens/videoScreen.dart';
-
+import 'package:taller1/screens/scanner.dart';  
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,31 +15,22 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   List<dynamic> _peliculas = [];
   bool _isLoading = true;
+  int _indice = 0;  
 
   @override
   void initState() {
     super.initState();
-    _fetchPeliculas(); 
+    _fetchPeliculas();
   }
 
- Future<void> _fetchPeliculas() async {
+  Future<void> _fetchPeliculas() async {
     final url = 'https://jritsqmet.github.io/web-api/peliculas1.json';
     try {
       final response = await http.get(Uri.parse(url));
-
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
         final List<dynamic> peliculas = data['peliculas'];
 
-      for (var pelicula in peliculas) {
-
-        if (pelicula['trailer'] == null || pelicula['trailer'].isEmpty) {
-
-          print('Missing trailer for: ${pelicula['titulo']}');
-
-        }
-
-      }
         setState(() {
           _peliculas = peliculas;
           _isLoading = false;
@@ -53,6 +44,84 @@ class _HomeScreenState extends State<HomeScreen> {
         _isLoading = false;
       });
     }
+  }
+
+  Widget _buildPeliculasList() {
+    return ListView.builder(
+      itemCount: _peliculas.length,
+      itemBuilder: (context, index) {
+        final pelicula = _peliculas[index];
+        return Card(
+          margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+          elevation: 5,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: GestureDetector(
+            onTap: () {
+              _playTrailer(pelicula['trailer']);
+            },
+            child: ListTile(
+              contentPadding: const EdgeInsets.all(10),
+              title: Text(
+                pelicula['titulo'],
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blueAccent,
+                ),
+              ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    pelicula['descripcion'],
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        _playTrailer(pelicula['trailer']);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 30),
+                        elevation: 5,
+                      ),
+                      child: const Text(
+                        'Ver Tráiler',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Color.fromARGB(255, 221, 27, 27),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              leading: pelicula['image'] != null
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.network(
+                        pelicula['image'],
+                        width: 60,
+                        height: 90,
+                        fit: BoxFit.cover,
+                      ),
+                    )
+                  : const Icon(Icons.image_not_supported, size: 60),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   void _playTrailer(String? trailerUrl) {
@@ -75,76 +144,55 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Películas'),
-        backgroundColor: const Color.fromARGB(255, 255, 0, 0),
-     actions: [
-  IconButton(
-    onPressed: () {
-      // Asegúrate de que estás pasando el correo del usuario (por ejemplo, de tu autenticación)
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ProfileScreen(email: 'usuario@correo.com'), // Pasa el correo dinámicamente aquí
-        ),
-      );
-    },
-    icon: Icon(Icons.person),
-  ),
-], ),
-    
+        backgroundColor: const Color.fromARGB(255, 228, 24, 24),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ProfileScreen(email: 'usuario@correo.com'),
+                ),
+              );
+            },
+            icon: const Icon(Icons.person),
+          ),
+        ],
+      ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              itemCount: _peliculas.length,
-              itemBuilder: (context, index) {
-                final pelicula = _peliculas[index];
-                return Card(
-                  margin:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                  elevation: 5, // Sombra para la tarjeta
-                  shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(12), // Bordes redondeados
-                  ),
-                  child: GestureDetector(
-                    onTap: () {
-                      _playTrailer("https://www.youtube.com/watch?v=YoHD9XEInc0");
-                    },
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.all(10),
-                      title: Text(
-                        pelicula['titulo'],
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blueAccent,
-                        ),
-                      ),
-                      subtitle: Text(
-                        pelicula['descripcion'],
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      leading: pelicula['image'] != null
-                          ? ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.network(
-                                pelicula[
-                                    'image'], // Usando la URL de la imagen desde el JSON
-                                width: 60,
-                                height: 90,
-                                fit: BoxFit.cover,
-                              ),
-                            )
-                          : const Icon(Icons.image_not_supported, size: 60),
-                    ),
-                  ),
-                );
-              },
-            ),
+          : _buildPeliculasList(),  
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _indice,
+        onTap: (value) {
+          setState(() {
+            _indice = value;
+          });
+
+          if (value == 1) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const QR()),
+            );
+          }
+        },
+        selectedItemColor: const Color.fromARGB(255, 199, 16, 16),
+        unselectedItemColor: Colors.grey,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.movie_filter_rounded),
+            label: "Películas",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.camera_alt),
+            label: "Escanear",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.accessible_sharp),
+            label: "Página 3",
+          ),
+        ],
+      ),
     );
   }
 }
-
-
